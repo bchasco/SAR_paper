@@ -2,7 +2,7 @@ library(ggplot2)
 rm(list=ls())
 
 tiff(paste0("fig_AnnualSurv_ggplot.tiff"), width=800, height=600)
-wd <- "C:/NOAA/PROJECTS/COLLEAGUES/BURKE/SAR_PAPER/"
+wd <- "C:/Chasco/PROJECTS/SAR_PAPER/" #root directory
 setwd(wd)
 
 Hf <- "out_H_bestMod.rData"

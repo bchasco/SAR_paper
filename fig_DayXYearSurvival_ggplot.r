@@ -3,7 +3,7 @@ library(ggplot2)
 
 ylim <- 0.05
 tiff("fig_DayxYearSurvival_ggplot.tiff", width=600, height=800)
-wd <- "C:/NOAA/PROJECTS/COLLEAGUES/BURKE/SAR_PAPER/"
+wd <- "C:/Chasco/PROJECTS/SAR_PAPER/" #root directory
 setwd(wd)
 Hf <- "out_H_bestMod.rData"
 Wf <- "out_W_bestMod.rData"

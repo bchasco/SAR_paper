@@ -1,7 +1,7 @@
 library(TMB)
 library(TMBhelper)
 # rm(list=ls())
-rootDir <- "C:/NOAA/PROJECTS/COLLEAGUES/BURKE/SAR_PAPER/" #root directory
+rootDir <- "C:/Chasco/PROJECTS/SAR_PAPER/" #root directory
 setwd(rootDir)
 eStartYr <- 2000 #start year of the environmental data
 eLastYr <- 2015 #end year of the environmental data
@@ -29,7 +29,7 @@ calibration_files <- c("calibration.out",
                        "ch1_Historical_2020rerun_wild_bonarrival.out")
 calibration_file <- calibration_files[1]
 
-reCompile <- FALSE
+reCompile <- TRUE
 getSD <- TRUE
 
 retro <- 0 # 1 = do the retrospective, 0 = don't do the retrospective
@@ -106,7 +106,7 @@ for(nn in 2:2){
   if(nn==0) mods <- 1:1
   if(nn>0) mods <- 1:nmod
   
-  for(jj in 0:0){
+  for(jj in 1:1){
     for(tt in 0:0){
       for(jt in 1:1){
         re_j <- jj
@@ -151,7 +151,7 @@ for(nn in 2:2){
             #   AICoutput[icnt,10] <- abs(cor(subData[tmpMarVars])[1,2])
             # }
 
-            file<-paste0("out_",rear,"_bestMod.rData",collapse = "")
+            file<-paste0("out_",rear,"_bestDailyMod.rData",collapse = "")
             if(saveOutput){
               save(out,
                    obj,

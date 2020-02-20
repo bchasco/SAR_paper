@@ -2,7 +2,7 @@ library(ggplot2)
 rm(list=ls())
 
 png(paste0("fig_envEffect_ggplot.png"), width=6, height=6, units = "in", res=600)
-wd <- "C:/NOAA/PROJECTS/COLLEAGUES/BURKE/SAR_PAPER/"
+wd <- "C:/Chasco/PROJECTS/SAR_PAPER/" #root directory
 setwd(wd)
 Hf <- "out_H_bestMod.rData"
 Wf <- "out_W_bestMod.rData"

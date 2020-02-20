@@ -2,10 +2,10 @@ library(ggplot2)
 rm(list=ls())
 
 # tiff(paste0("fig_DailySurv_ggplot.tiff"), width=800, height=600)
-wd <- "C:/NOAA/PROJECTS/COLLEAGUES/BURKE/SAR_PAPER/"
+wd <- "C:/Chasco/PROJECTS/SAR_PAPER/" #root directory
 setwd(wd)
 
-Hf <- "out_H_bestMod_daily.rData"
+Hf <- "out_H_bestDailyMod.rData"
 Wf <- "out_W_bestMod.rData"
 load(Wf)
 nj <- length(minJ:maxJ)

@@ -84,7 +84,7 @@ Type objective_function<Type>::operator() ()
       }
     }
   }
-  vector<Type> rho_j = atan(frho_j)*2./3.154;//1/(1+exp(-frho_j));//
+  vector<Type> rho_j = 1/(1+exp(-frho_j));//atan(frho_j)*2./3.154;//
   vector<Type> rho_t = atan(frho_t)*2./3.154;//1/(1+exp(-frho_t));//
   vector<Type> rho1_jt = atan(frho1_jt)*2./3.154;//1/(1+exp(-frho1_jt));//
   vector<Type> rho2_jt = atan(frho2_jt)*2./3.154;//1/(1+exp(-frho2_jt));//
