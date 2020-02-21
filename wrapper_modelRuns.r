@@ -15,10 +15,10 @@ runSensitivity <- FALSE #Do you want to run a sensitivity analysis
 numberOfMarineVariables <- 1 #number of marine variables
 #Estimated (1 is estimate, 0 is don't estimate)
 rearType <- c("W")
-re_j <- 1 #Day effect
+re_j <- 0 #Day effect
 re_t <- 0 #Year effect
-re_jt <- 1 #Day X Year effect
-fixed_mar <- 1 #mar/env surv parameters
+re_jt <- 0 #Day X Year effect
+fixed_mar <- 0 #mar/env surv parameters
 mean_s <- 1 #Mean survival parameters
 cov_pars <- 0 #covariance parameters
 
@@ -29,7 +29,7 @@ calibration_files <- c("calibration.out",
                        "ch1_Historical_2020rerun_wild_bonarrival.out")
 calibration_file <- calibration_files[1]
 
-reCompile <- TRUE
+reCompile <- FALSE
 getSD <- TRUE
 
 retro <- 0 # 1 = do the retrospective, 0 = don't do the retrospective
@@ -90,7 +90,7 @@ dyn.load("integrated2.dll")
 
 icnt <- 0
 jcnt <- 0
-for(nn in 2:2){
+for(nn in 0:0){
   numberOfMarineVariables <- max(nn,1)
   if(nn==0){
     fixed_mar <- 0
@@ -113,11 +113,11 @@ for(nn in 2:2){
         re_t <- tt
         re_jt <- jt
         
-        for(mm in 1:1){
+        for(mm in 1:1){ #mods
           for(rr in c("H")){
             jcnt <- jcnt + 1
             rear <- rr
-            tmpMarVars <- c(11,24)#c(myTmpMarVars[,mm]) #The temporary marine variables
+            tmpMarVars <- c(11,24)# W = 15,36, H = 11,24, c(myTmpMarVars[,mm]) #The temporary marine variables
             
             source("create_DataAndPars.r")
             if(numberOfMarineVariables>1){
@@ -125,6 +125,7 @@ for(nn in 2:2){
                 next
               }
             }
+            file<-paste0("out_",rear,"_NoMar_Mod.rData",collapse = "")
             
             icnt <- icnt + 1
             print(paste(icnt,jcnt))
@@ -151,7 +152,6 @@ for(nn in 2:2){
             #   AICoutput[icnt,10] <- abs(cor(subData[tmpMarVars])[1,2])
             # }
 
-            file<-paste0("out_",rear,"_bestDailyMod.rData",collapse = "")
             if(saveOutput){
               save(out,
                    obj,

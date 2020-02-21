@@ -74,7 +74,7 @@ obj <- MakeADFun(data = data,
                           ,"eps_x"
                           ,"frho_Rx"
                  ),
-                 silent = TRUE,
+                 silent = FALSE,
                  bias.correct=TRUE,
                  DLL = "integrated2")
 
