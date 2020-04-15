@@ -112,14 +112,13 @@ data <- list( yShift = yShift
              ,re_t = re_t
              ,re_jt = re_jt
              ,cov_pars = cov_pars
-             ,retro = retro
              ,env_mu = as.vector(env_mu[myVars])
              ,env_sc = as.vector(env_sc[myVars])
              ,env_mu_2000_2015 = as.vector(env_mu_2000_2015[myVars])
              ,env_sc_2000_2015 = as.vector(env_sc_2000_2015[myVars])
-             ,calibration_flag = calibration_flag
              ,calibration_timing = as.matrix(calibration_timing)
              ,calibration_years = calibration_years
+             ,simCor_j = simCor_j
 )
 
 env_mu <- apply(tmpenv,2,function(x){return(mean(na.omit(x)))})
@@ -129,6 +128,7 @@ env_mu_2000_2015 <- apply(tmpenv[tmpenv$Year>=2000 & tmpenv$Year<=2015,],2,funct
 env_sc_2000_2015 <- apply(tmpenv[tmpenv$Year>=2000 & tmpenv$Year<=2015,],2,function(x){sd(na.omit(x))})
 
 nk_dim <- max(data$k)+1
+
 parameters <- list(mu_s  = rep(0,nk_dim)
                    ,frho_j = rep(0,nk_dim)
                    ,frho_t = rep(0,nk_dim)
@@ -146,5 +146,6 @@ parameters <- list(mu_s  = rep(0,nk_dim)
                    ,fpsi_x = rep(0,nvar)
                    ,eps_x = matrix(0,nvar,length(eStartYr:eLastYr))
 )
+
 
 pt <- Sys.time()

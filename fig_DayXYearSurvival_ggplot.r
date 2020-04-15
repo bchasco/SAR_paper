@@ -2,8 +2,8 @@ library(ggplot2)
 # rm(list=ls())
 
 ylim <- 0.05
-tiff("fig_DayxYearSurvival_ggplot.tiff", width=600, height=800)
-wd <- "C:/Chasco/PROJECTS/SAR_PAPER/" #root directory
+# tiff("fig_DayxYearSurvival_ggplot.tiff", width=600, height=800)
+wd <- "C:/NOAA/PROJECTS/SAR_PAPER/" #root directory
 setwd(wd)
 Hf <- "out_H_bestMod.rData"
 Wf <- "out_W_bestMod.rData"
@@ -126,4 +126,4 @@ p <- p +
             aes(label = label, x=as.Date(150, origin = as.Date("2018-01-01")),y=ylim*0.9), size=geom.text.size)
 
 print(p)
-dev.off()
+# dev.off()

@@ -19,14 +19,13 @@ Type objective_function<Type>::operator() ()
   DATA_INTEGER(re_t); //year effect flag
   DATA_INTEGER(re_jt); //day X year effect flag
   DATA_INTEGER(cov_pars); //env. covariance flag
-  DATA_INTEGER(retro);
   DATA_VECTOR(env_mu);
   DATA_VECTOR(env_sc);
   DATA_VECTOR(env_mu_2000_2015);
   DATA_VECTOR(env_sc_2000_2015);
-  DATA_INTEGER(calibration_flag);
   DATA_MATRIX(calibration_timing);
   DATA_IVECTOR(calibration_years);
+  DATA_SCALAR(simCor_j);
   
   PARAMETER_VECTOR(mu_s);
   PARAMETER_VECTOR(frho_j); //temporal correlation for each env. variable
@@ -78,7 +77,7 @@ Type objective_function<Type>::operator() ()
     for(int j=0;j<nvar;j++){
       for(int t=0;t<nte;t++){
         env_hat(t,j) = eps_x(j,t)*psi_x(j);
-        if(env(t,j)>-100 & cov_pars==1){
+        if((env(t,j)>(-100)) & (cov_pars==1)){
           ff -= dnorm(env_hat(t,j), env(t,j), sd, true);
         }
       }
@@ -170,6 +169,52 @@ Type objective_function<Type>::operator() ()
   vector<Type> s_j = eps_j.col(0) * psi_j(0);
   s_j += mu_s(0);
 
+  SIMULATE {
+    array<Type> s_eps_jt(nj,nt);
+    vector<Type> s_eps_j(nj);
+    vector<Type> s_eps_t(nt);
+    for(int kk=0;kk<nk;kk++){
+      if(re_jt==1){ //interaction
+        AR1(simCor1_jt,AR1(simCor2_jt)).simulate(s_eps_jt);
+      }
+      if(re_jt==0){ //interaction
+        s_eps_jt.setZero();
+      }
+      
+      if(re_j==1){ //day effect
+        AR1(simCor_j).simulate(s_eps_j);
+      }
+      if(re_j==0){ //day effect
+        s_eps_j.setZero();
+      }
+      
+      if(re_t==1){//year effect
+        AR1(rho_t(kk)).simulate(s_eps_t);
+      }
+      if(re_t==0){ //day effect
+        s_eps_t.setZero();
+      }
+      
+    }
+
+    vector<Type> sim_k(s_k.size());
+    sim_k.setZero();
+    for(int i=0;i<s_k.size();i++){
+      Type nu = mu_s(k(i)) +        //Mean
+        eMar(i) +         //Annual environmental effects
+        s_eps_t(yr(i) - yShift) * psi_t(k(i)) +        //1D AR1 year
+        s_eps_j(j(i)) * psi_j(k(i)) +       //1D AR1 day
+        s_eps_jt(j(i),yr(i)-yShift) * psi_jt(k(i)); //2D AR1XAR1 yearXday
+      s_hat(i) = exp(nu)/(1+exp(nu)); //Logit
+      
+      sim_k(i) = rbinom(s_n(i)*sim_n,s_hat(i));
+    }
+    REPORT(s_eps_j);
+    REPORT(s_eps_jt);
+    REPORT(s_eps_t);
+    REPORT(sim_k);
+  }
+  
   REPORT(mu_s);
   REPORT(s_t);
   REPORT(frho_j); //temporal correlation for each env. variable
