@@ -14,7 +14,7 @@ setSeed <- TRUE
 runSensitivity <- FALSE #Do you want to run a sensitivity analysis
 numberOfMarineVariables <- 1 #number of marine variables
 #Estimated (1 is estimate, 0 is don't estimate)
-rearType <- c("W")
+rearType <- c("H")
 re_j <- 0 #Day effect
 re_t <- 0 #Year effect
 re_jt <- 0 #Day X Year effect
@@ -70,7 +70,7 @@ myVars <-c(marVars)
 myTrans <- c("In-river")
 
 
-saveOutput <- TRUE
+saveOutput <- FALSE
 # AICoutput <- as.data.frame(matrix(NA,100000,10))
 # names(AICoutput) <- c("AIC",
                       # "vars",
@@ -115,10 +115,10 @@ for(nn in 2:2){
         re_jt <- jt
         
         for(mm in 1:1){ #mods
-          for(rr in c("W")){
+          for(rr in c("H")){
             jcnt <- jcnt + 1
             rear <- rr
-            tmpMarVars <- c(15,36)# W = 15,36, H = 11,24, c(myTmpMarVars[,mm]) #The temporary marine variables
+            tmpMarVars <- c(11,24)# W = 15,36, H = 11,24, c(myTmpMarVars[,mm]) #The temporary marine variables
             
             source("create_DataAndPars.r")
             if(numberOfMarineVariables>1){
@@ -192,107 +192,107 @@ for(nn in 2:2){
 }#end nvars
 
 # save(AICoutput, file="AICoutput.rData")
-nsim <- 500
-simMat <- matrix(NA,nsim,10)
-for(i in 1:nsim){
-  set.seed(10*i)
-
-  sim <- obj$simulate(complete=TRUE)
-  sim$s_k <- sim$sim_k
-  sim$s_n <- sim$s_n * 1
-  if(sum(is.na(sim$sim_k))==0){
-    obj_sim <- MakeADFun(data = sim,
-                         parameters = parameters,
-                         map = myMap,
-                         random=c("eps_j"
-                                  ,"eps_t"
-                                  ,"eps_jt"
-                                  ,"eps_x"
-                                  ,"frho_Rx"
-                         ),
-                         silent = TRUE,
-                         bias.correct=TRUE,
-                         DLL = "integrated2")
-    
-    
-    sim_out <- nlminb(obj_sim$par,obj_sim$fn,obj_sim$gr)
-    
-    sim_rep <- obj_sim$report()
-    
-    simMat[i,] <- c(exp(sim_rep$mu_s),
-                    plogis(sim_rep$frho_j),
-                    atan(sim_rep$frho_t)*2/3.154,
-                    atan(sim_rep$frho1_jt)*2/3.154,
-                    atan(sim_rep$frho2_jt)*2/3.154,
-                    exp(sim_rep$fpsi_j),
-                    exp(sim_rep$fpsi_t),
-                    exp(sim_rep$fpsi_jt),
-                    sim_rep$beta_mar)
-    
-      # unlist(sim_out$par),sum(sim$s_k))
-
-    par(mfrow=c(1,1))
-    data.frame(n=sim$s_n,k=sim$sim_k,j=sim$j)
-    df <- data.frame(n=sim$s_n,k=sim$sim_k,j=sim$j)
-    ag <- aggregate(list(k=df$k,n=df$n),by=list(df$j),sum)
-    par(mfrow=c(2,2))
-    
-    plot(ag$Group.1,ag$k/ag$n,
-         cex=1.3,
-         ylab="Survival",
-         col="darkgrey",
-         pch=16)
-    lines(plogis(sim_rep$mu_s+sim_rep$eps_j))
-    
-    plot(sim$s_eps_j)
-    lines(sim_rep$eps_j)
-    
-    matplot(sim_rep$eps_jt[1,,c(1,10)], 
-            type="l",
-            ylab="dayXyear deviates",
-            lty=1,
-            lwd=2)
-    matpoints(sim$s_eps_jt[,c(1,10)], 
-              pch=16,
-              cex=1.2)
-    
-    
-    print(paste(i,sum(sim$sim_k>0),sum(sim$sim_k)))
-  }
-}
-
-
-library(reshape2)
-simMat <- as.data.frame(simMat)
-names(simMat) <- c("mu_s","rho_j","rho_t","rho1_jt","rho2_jt","psi_j","psi_t","psi_jt","beta1","beta2")
-myLines <- data.frame(pars=names(simMat),
-                      value=c(exp(rep$mu_s),
-                              simCor_j,#plogis(rep$frho_j),
-                              atan(rep$frho_t)*2/3.154,
-                              atan(rep$frho1_jt)*2/3.154,
-                              atan(rep$frho2_jt)*2/3.154,
-                              exp(rep$fpsi_j),
-                              exp(rep$fpsi_t),
-                              exp(rep$fpsi_jt),
-                              rep$beta_mar))
-simMat <- as.data.frame(t((t(simMat)-myLines$value)/myLines$value))
-simMelt <- melt(simMat,
-                measure.vars = names(simMat),
-                variable.name="pars")
-
-for(ii in names(simMat)){
-  if(!is.na(mean(simMelt$value[simMelt$pars==ii]))){
-    dat_q <- quantile(simMelt$value[simMelt$pars==ii], probs=c(0.025,0.975))
-    simMelt <- simMelt[!(simMelt$pars==ii & (simMelt$value<dat_q[1] | simMelt$value>=dat_q[2])),]
-  }
-}
-
-library(ggplot2)
-
-
-p <- ggplot(simMelt, aes(factor(pars),value)) +
-  facet_wrap(~pars, scales = "free") +
-  geom_violin(aes(factor(pars)))+
-  geom_hline(aes(yintercept=0), colour="blue")
-
-print(p)
+# nsim <- 500
+# simMat <- matrix(NA,nsim,10)
+# for(i in 1:nsim){
+#   set.seed(10*i)
+# 
+#   sim <- obj$simulate(complete=TRUE)
+#   sim$s_k <- sim$sim_k
+#   sim$s_n <- sim$s_n * 1
+#   if(sum(is.na(sim$sim_k))==0){
+#     obj_sim <- MakeADFun(data = sim,
+#                          parameters = parameters,
+#                          map = myMap,
+#                          random=c("eps_j"
+#                                   ,"eps_t"
+#                                   ,"eps_jt"
+#                                   ,"eps_x"
+#                                   ,"frho_Rx"
+#                          ),
+#                          silent = TRUE,
+#                          bias.correct=TRUE,
+#                          DLL = "integrated2")
+#     
+#     
+#     sim_out <- nlminb(obj_sim$par,obj_sim$fn,obj_sim$gr)
+#     
+#     sim_rep <- obj_sim$report()
+#     
+#     simMat[i,] <- c(exp(sim_rep$mu_s),
+#                     plogis(sim_rep$frho_j),
+#                     atan(sim_rep$frho_t)*2/3.154,
+#                     atan(sim_rep$frho1_jt)*2/3.154,
+#                     atan(sim_rep$frho2_jt)*2/3.154,
+#                     exp(sim_rep$fpsi_j),
+#                     exp(sim_rep$fpsi_t),
+#                     exp(sim_rep$fpsi_jt),
+#                     sim_rep$beta_mar)
+#     
+#       # unlist(sim_out$par),sum(sim$s_k))
+# 
+#     par(mfrow=c(1,1))
+#     data.frame(n=sim$s_n,k=sim$sim_k,j=sim$j)
+#     df <- data.frame(n=sim$s_n,k=sim$sim_k,j=sim$j)
+#     ag <- aggregate(list(k=df$k,n=df$n),by=list(df$j),sum)
+#     par(mfrow=c(2,2))
+#     
+#     plot(ag$Group.1,ag$k/ag$n,
+#          cex=1.3,
+#          ylab="Survival",
+#          col="darkgrey",
+#          pch=16)
+#     lines(plogis(sim_rep$mu_s+sim_rep$eps_j))
+#     
+#     plot(sim$s_eps_j)
+#     lines(sim_rep$eps_j)
+#     
+#     matplot(sim_rep$eps_jt[1,,c(1,10)], 
+#             type="l",
+#             ylab="dayXyear deviates",
+#             lty=1,
+#             lwd=2)
+#     matpoints(sim$s_eps_jt[,c(1,10)], 
+#               pch=16,
+#               cex=1.2)
+#     
+#     
+#     print(paste(i,sum(sim$sim_k>0),sum(sim$sim_k)))
+#   }
+# }
+# 
+# 
+# library(reshape2)
+# simMat <- as.data.frame(simMat)
+# names(simMat) <- c("mu_s","rho_j","rho_t","rho1_jt","rho2_jt","psi_j","psi_t","psi_jt","beta1","beta2")
+# myLines <- data.frame(pars=names(simMat),
+#                       value=c(exp(rep$mu_s),
+#                               simCor_j,#plogis(rep$frho_j),
+#                               atan(rep$frho_t)*2/3.154,
+#                               atan(rep$frho1_jt)*2/3.154,
+#                               atan(rep$frho2_jt)*2/3.154,
+#                               exp(rep$fpsi_j),
+#                               exp(rep$fpsi_t),
+#                               exp(rep$fpsi_jt),
+#                               rep$beta_mar))
+# simMat <- as.data.frame(t((t(simMat)-myLines$value)/myLines$value))
+# simMelt <- melt(simMat,
+#                 measure.vars = names(simMat),
+#                 variable.name="pars")
+# 
+# for(ii in names(simMat)){
+#   if(!is.na(mean(simMelt$value[simMelt$pars==ii]))){
+#     dat_q <- quantile(simMelt$value[simMelt$pars==ii], probs=c(0.025,0.975))
+#     simMelt <- simMelt[!(simMelt$pars==ii & (simMelt$value<dat_q[1] | simMelt$value>=dat_q[2])),]
+#   }
+# }
+# 
+# library(ggplot2)
+# 
+# 
+# p <- ggplot(simMelt, aes(factor(pars),value)) +
+#   facet_wrap(~pars, scales = "free") +
+#   geom_violin(aes(factor(pars)))+
+#   geom_hline(aes(yintercept=0), colour="blue")
+# 
+# print(p)

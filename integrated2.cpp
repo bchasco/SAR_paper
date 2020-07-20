@@ -170,49 +170,49 @@ Type objective_function<Type>::operator() ()
   s_j += mu_s(0);
 
   SIMULATE {
-    array<Type> s_eps_jt(nj,nt);
-    vector<Type> s_eps_j(nj);
-    vector<Type> s_eps_t(nt);
-    for(int kk=0;kk<nk;kk++){
-      if(re_jt==1){ //interaction
-        AR1(simCor1_jt,AR1(simCor2_jt)).simulate(s_eps_jt);
-      }
-      if(re_jt==0){ //interaction
-        s_eps_jt.setZero();
-      }
-      
-      if(re_j==1){ //day effect
-        AR1(simCor_j).simulate(s_eps_j);
-      }
-      if(re_j==0){ //day effect
-        s_eps_j.setZero();
-      }
-      
-      if(re_t==1){//year effect
-        AR1(rho_t(kk)).simulate(s_eps_t);
-      }
-      if(re_t==0){ //day effect
-        s_eps_t.setZero();
-      }
-      
-    }
-
-    vector<Type> sim_k(s_k.size());
-    sim_k.setZero();
-    for(int i=0;i<s_k.size();i++){
-      Type nu = mu_s(k(i)) +        //Mean
-        eMar(i) +         //Annual environmental effects
-        s_eps_t(yr(i) - yShift) * psi_t(k(i)) +        //1D AR1 year
-        s_eps_j(j(i)) * psi_j(k(i)) +       //1D AR1 day
-        s_eps_jt(j(i),yr(i)-yShift) * psi_jt(k(i)); //2D AR1XAR1 yearXday
-      s_hat(i) = exp(nu)/(1+exp(nu)); //Logit
-      
-      sim_k(i) = rbinom(s_n(i)*sim_n,s_hat(i));
-    }
-    REPORT(s_eps_j);
-    REPORT(s_eps_jt);
-    REPORT(s_eps_t);
-    REPORT(sim_k);
+    // array<Type> s_eps_jt(nj,nt);
+    // vector<Type> s_eps_j(nj);
+    // vector<Type> s_eps_t(nt);
+    // for(int kk=0;kk<nk;kk++){
+    //   if(re_jt==1){ //interaction
+    //     AR1(simCor1_jt,AR1(simCor2_jt)).simulate(s_eps_jt);
+    //   }
+    //   if(re_jt==0){ //interaction
+    //     s_eps_jt.setZero();
+    //   }
+    //   
+    //   if(re_j==1){ //day effect
+    //     AR1(simCor_j).simulate(s_eps_j);
+    //   }
+    //   if(re_j==0){ //day effect
+    //     s_eps_j.setZero();
+    //   }
+    //   
+    //   if(re_t==1){//year effect
+    //     AR1(rho_t(kk)).simulate(s_eps_t);
+    //   }
+    //   if(re_t==0){ //day effect
+    //     s_eps_t.setZero();
+    //   }
+    //   
+    // }
+    // 
+    // vector<Type> sim_k(s_k.size());
+    // sim_k.setZero();
+    // for(int i=0;i<s_k.size();i++){
+    //   Type nu = mu_s(k(i)) +        //Mean
+    //     eMar(i) +         //Annual environmental effects
+    //     s_eps_t(yr(i) - yShift) * psi_t(k(i)) +        //1D AR1 year
+    //     s_eps_j(j(i)) * psi_j(k(i)) +       //1D AR1 day
+    //     s_eps_jt(j(i),yr(i)-yShift) * psi_jt(k(i)); //2D AR1XAR1 yearXday
+    //   s_hat(i) = exp(nu)/(1+exp(nu)); //Logit
+    //   
+    //   sim_k(i) = rbinom(s_n(i)*sim_n,s_hat(i));
+    // }
+    // REPORT(s_eps_j);
+    // REPORT(s_eps_jt);
+    // REPORT(s_eps_t);
+    // REPORT(sim_k);
   }
   
   REPORT(mu_s);
